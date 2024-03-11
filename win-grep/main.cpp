@@ -1,7 +1,6 @@
-﻿#include <iostream>
+﻿#include <cstdio>
 
 #include "log_reader.h"
-#include <string>
 
 
 int main(int argc, char *argv[]) {
@@ -17,7 +16,7 @@ int main(int argc, char *argv[]) {
                 int fail_count = 0;
                 while (fail_count < 2) {
                     if (reader.GetNextLine(buffer, CLogReader::DEFAULT_BUFFER_SIZE))
-                        std::cout << buffer << std::endl;
+                        printf("%s\n", buffer);
                     else
                         fail_count++;
                 }
@@ -26,11 +25,11 @@ int main(int argc, char *argv[]) {
 
                 return 0;
             } else
-                std::cout << "opening file '" << argv[1] << "' error" << std::endl;
+                printf("opening file '%s' error\n", argv[1]);
         } else
-            std::cout << "wrong filter '" << argv[2] << "'" << std::endl;
+            printf("wrong filter '%s'", argv[2]);
     } else
-        std::cout << argv[0] << " path filter" << std::endl;
+        printf("%s path filter", argv[0]);
 
     return 1; // -----
 }

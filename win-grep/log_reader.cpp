@@ -1,14 +1,7 @@
 #include "log_reader.h"
 
-#include <string>
 #include <string.h>
 #include <stdexcept>
-#include <iostream>
-
-#include <iostream>
-
-
-using std::string;
 
 
 size_t DEFAULT_MASK_SUBSTR_SIZE_LIMIT           = 255;
@@ -259,6 +252,9 @@ bool CLogReader::GetNextLine(char *buffer, const int buffer_size) {
         size_t rpos = lpos + 1;
         // action   position of filtering line
         size_t apos = lpos + 1;
+
+        // BUFFER = [m_lpos]...[lpos]='\n'...[apos]...[rpos]='\n'...[m_rpos]
+        // apos = position between lpos and rpos compared  by action filter
 
         // read the file and parse the buffer until it finds a line by mask or receives eof
         do {
