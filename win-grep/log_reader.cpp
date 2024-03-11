@@ -280,6 +280,15 @@ bool CLogReader::GetNextLine(char *buffer, const int buffer_size) {
                 if (m_lpos >= m_rpos)
                     return false; // ----->
 
+                while (lpos < m_rpos && 
+                    m_buffer[lpos] == '\n' ||
+                    m_buffer[lpos] == '\r'
+                )
+                    lpos++;
+
+                rpos = lpos;
+                lpos--;
+
                 while (rpos < m_rpos && m_buffer[rpos] != '\n')
                     rpos++;
 
@@ -314,6 +323,9 @@ bool CLogReader::GetNextLine(char *buffer, const int buffer_size) {
             auto action = m_filter_action;
 
             apos = lpos + 1;
+
+            if (apos >= m_rpos && m_is_eof)
+                return false; // ----->
 
             while  (action) {
                 if (apos + action->size > rpos)

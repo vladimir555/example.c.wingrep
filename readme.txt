@@ -1,4 +1,4 @@
-Упрощенный аналог grep
+Упрощенный windows аналог grep
 
 Параметры запуска win-grep.exe FILE.TXT "MASK"
 где 
