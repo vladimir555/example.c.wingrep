@@ -101,8 +101,13 @@ bool CLogReader::SetFilter(const char *filter) {
             filter[rpos] != '*' &&
             filter[rpos] != '?') 
         {
-            if (filter[rpos] == '\\')
+            if (filter[rpos] == '\\' && rpos + 1 < size &&
+               (filter[rpos + 1] == '\\' ||
+                filter[rpos + 1] == '*'  ||
+                filter[rpos + 1] == '?'))
+            {
                 rpos++;
+            }
 
             if (filter[rpos] == '\n') {
                 delete m_filter_action;
@@ -115,16 +120,27 @@ bool CLogReader::SetFilter(const char *filter) {
 
         // copy substr for finding after '*' or for comparing
         if (rpos > lpos) {
-            size_t  size = rpos - lpos;
-            char   *data = new (std::nothrow) char[size + 2];
+            size_t  size        = rpos - lpos;
+            action->next->data  = new (std::nothrow) char[size + 1];
 
-            if (data) {
-                if (action->next && !strncpy_s(data, size + 1, &filter[lpos], size)) {
-                    data[size + 1] = 0;
-                    action->next->data = data;
-                    action->next->size = size;
-                } else
-                    delete[] data;
+            if (action->next->data) {
+                int i = 0;
+                while (lpos < rpos && i < size) {
+                    if (filter[lpos]     == '\\' && lpos + 1 < size &&
+                       (filter[lpos + 1] == '\\' ||
+                        filter[lpos + 1] == '*'  ||
+                        filter[lpos + 1] == '?')) 
+                    {
+                        lpos++;
+                    }
+                    action->next->data[i] = filter[lpos];
+                    lpos++;
+                    i++;
+                }
+                action->next->data[i] = 0;
+
+                //action->next->data = data;
+                action->next->size = i;
             } else
                 break; // --->
         }
