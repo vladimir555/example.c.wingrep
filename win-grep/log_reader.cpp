@@ -340,7 +340,7 @@ bool CLogReader::GetNextLine(char *buffer, const int buffer_size) {
                 return false; // ----->
 
             while  (action) {
-                if (apos + action->size > rpos)
+                if (apos + action->size >= rpos)
                     break; // --->
 
                 if (action->operation == TFilterAction::TOperation::COMPARE) {
@@ -354,13 +354,20 @@ bool CLogReader::GetNextLine(char *buffer, const int buffer_size) {
 
                 if (action->operation == TFilterAction::TOperation::FIND) {
                     if (action->data) {
-                        m_buffer[rpos] = 0;
-                        auto p = strstr(&m_buffer[apos], action->data);
-                        m_buffer[rpos] = '\n';
-                        if (p)
-                            apos += action->size + p - &m_buffer[apos];
-                        else
-                            break; // --->
+                        char *p = nullptr;
+                        auto apos_ = apos;
+                        do {
+                            m_buffer[rpos] = 0;
+                            p = strstr(&m_buffer[apos], action->data);
+                            m_buffer[rpos] = '\n';
+                            if (p) {
+                                apos += action->size + p - &m_buffer[apos];
+                            }
+                        } while (p);
+
+                        if (apos == apos_)
+                            break; // ----->
+
                     } else {
                         apos = rpos;
                     }
